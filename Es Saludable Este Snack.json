@@ -1,0 +1,1084 @@
+{
+  "name": "My workflow",
+  "nodes": [
+    {
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "f4441d09-5e3d-4e32-b284-c35e664364a7",
+        "responseMode": "responseNode",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 2.1,
+      "position": [
+        -720,
+        112
+      ],
+      "id": "ace3bbc1-a596-405b-a049-0fffa6bf5cec",
+      "name": "Webhook",
+      "webhookId": "f4441d09-5e3d-4e32-b284-c35e664364a7"
+    },
+    {
+      "parameters": {
+        "respondWith": "json",
+        "responseBody": "{\n    \"error\": \"Falta el campo 'barcode'\",\n    \"servicio\": \"Verifica si un snack es saludable según su código de barras\",\n    \"campo_requerido\": \"barcode (string numérico)\",\n    \"ejemplo\": { \"barcode\": \"3017620422003\" }\n  }",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.respondToWebhook",
+      "typeVersion": 1.5,
+      "position": [
+        -288,
+        224
+      ],
+      "id": "a86133db-17eb-4acb-8bae-6c9e83bf7354",
+      "name": "Respond to Webhook1"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "9e187c81-db47-43fb-ab17-bb4583b63a10",
+              "name": "sugars_100g",
+              "value": "={{ $json.body.product.nutriments.sugars_100g }}",
+              "type": "number"
+            },
+            {
+              "id": "e4547bb6-0cf5-4fb1-89df-5cb5abf4c191",
+              "name": "=salt_100g",
+              "value": "={{ $json.body.product.nutriments.salt_100g }}",
+              "type": "number"
+            },
+            {
+              "id": "8234ed3f-60af-4762-8f62-41189d1dcb5e",
+              "name": "=fat_100g",
+              "value": "={{ $json.body.product.nutriments.fat_100g }}",
+              "type": "number"
+            },
+            {
+              "id": "335319bd-5917-491f-9116-b25177abd5d0",
+              "name": "=energy-kcal_100g",
+              "value": "={{ $json.body.product.nutriments['energy-kcal_100g'] }}",
+              "type": "number"
+            },
+            {
+              "id": "17fd8f54-39b1-4fc2-b120-84c20d00d3f2",
+              "name": "=nutriscore",
+              "value": "={{ $json.body.product.nutriscore_grade }}",
+              "type": "string"
+            },
+            {
+              "id": "4996fd02-a5cd-4814-891e-c9a7383de998",
+              "name": "product_name",
+              "value": "={{ $json.body.product.product_name }}",
+              "type": "string"
+            },
+            {
+              "id": "83269a75-f4ca-4cd1-b901-3b1baab44ab9",
+              "name": "brands",
+              "value": "={{ $json.body.product.brands }}",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.5,
+      "position": [
+        304,
+        -80
+      ],
+      "id": "ba1fc654-bcb1-43e0-8ab4-e3b98c80a62c",
+      "name": "Edit Fields1"
+    },
+    {
+      "parameters": {
+        "respondWith": "json",
+        "responseBody": "{\n     \"error\": \"El campo 'barcode' debe contener solo números\",\n     \"valor_recibido\": \"{{ $json.body.barcode }}\",\n     \"ejemplo_valido\": { \"barcode\": \"3017620422003\" }\n   }",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.respondToWebhook",
+      "typeVersion": 1.5,
+      "position": [
+        -48,
+        96
+      ],
+      "id": "f0fa2f68-47d1-4269-83a4-654f807ba134",
+      "name": "Respond to Webhook"
+    },
+    {
+      "parameters": {
+        "respondWith": "json",
+        "responseBody": "{\n  \"error\": \"product_not_found\",\n  \"message\": \"No product was found for this barcode.\",\n  \"example_barcode\": \"3017620422003\"\n}",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.respondToWebhook",
+      "typeVersion": 1.5,
+      "position": [
+        272,
+        128
+      ],
+      "id": "ce2ee1ef-6b7b-4666-bc39-e051b6fde62f",
+      "name": "Respond to Webhook3"
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 3
+          },
+          "conditions": [
+            {
+              "id": "cf8806e4-96da-43b9-8f57-13a242b6fe1d",
+              "leftValue": "={{ $json.sugars_100g }}",
+              "rightValue": 0,
+              "operator": {
+                "type": "number",
+                "operation": "exists",
+                "singleValue": true
+              }
+            },
+            {
+              "id": "54a4b2b9-d955-4d20-8d5e-10c1084e9b4b",
+              "leftValue": "={{ $json.salt_100g }}",
+              "rightValue": 0,
+              "operator": {
+                "type": "number",
+                "operation": "exists",
+                "singleValue": true
+              }
+            },
+            {
+              "id": "fdef88ab-4a66-4801-9ceb-1efbe30af546",
+              "leftValue": "={{ $json.fat_100g }}",
+              "rightValue": "",
+              "operator": {
+                "type": "number",
+                "operation": "exists",
+                "singleValue": true
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.3,
+      "position": [
+        480,
+        -64
+      ],
+      "id": "4be5e44d-06dc-4582-bd84-25ee6b8ff68e",
+      "name": "Nutrition_Data"
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 3
+          },
+          "conditions": [
+            {
+              "id": "22eadf44-69d3-474f-9ecf-92eb21c4ce7b",
+              "leftValue": "={{ $json.statusCode }}",
+              "rightValue": 200,
+              "operator": {
+                "type": "number",
+                "operation": "equals"
+              }
+            },
+            {
+              "id": "1b7762e1-cf24-43f3-9fd6-d425f96bedfe",
+              "leftValue": "={{ $json.body.status }}",
+              "rightValue": 1,
+              "operator": {
+                "type": "number",
+                "operation": "equals"
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.3,
+      "position": [
+        48,
+        -64
+      ],
+      "id": "1fd3ea73-43fd-4877-bb81-893e1717c734",
+      "name": "Existencia_Product"
+    },
+    {
+      "parameters": {
+        "respondWith": "json",
+        "responseBody": "{\n\"status\": \"insufficient_data\",\n\"message\": \"Se encontró el producto, pero no contiene suficiente información nutricional para clasificarlo.\"\n}",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.respondToWebhook",
+      "typeVersion": 1.5,
+      "position": [
+        704,
+        32
+      ],
+      "id": "1429e942-de31-4dbd-ab7b-fb0266d6524b",
+      "name": "Respond to Webhook2"
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 3
+          },
+          "conditions": [
+            {
+              "id": "903c491e-5200-4bf3-9794-c722bb297add",
+              "leftValue": "={{ $json.nutriscore }}",
+              "rightValue": "",
+              "operator": {
+                "type": "string",
+                "operation": "exists",
+                "singleValue": true
+              }
+            },
+            {
+              "id": "38f93771-7e1b-464f-8642-23c3ddf6ae74",
+              "leftValue": "={{ $json.nutriscore }}",
+              "rightValue": "unknown",
+              "operator": {
+                "type": "string",
+                "operation": "notEquals"
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.3,
+      "position": [
+        704,
+        -112
+      ],
+      "id": "21331587-6a40-4349-b0cf-52ef874eeb15",
+      "name": "If2"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "91ebc51e-7f1b-4bbe-b0a6-948a7242a2b4",
+              "name": "sugar_level",
+              "value": "={{ $json.sugars_100g < 5 ? 'low' : ($json.sugars_100g <= 22.5 ? 'medium' : 'high') }}",
+              "type": "string"
+            },
+            {
+              "id": "8c65ef1c-d948-490b-9756-cf92fda58403",
+              "name": "salt_level",
+              "value": "={{ $json.salt_100g > 1.5 ? 'high' : 'not_high' }}",
+              "type": "string"
+            },
+            {
+              "id": "3a586513-3903-4f92-befb-9ac4c7577853",
+              "name": "fat_level",
+              "value": "={{ $json.fat_100g > 17.5 ? 'high' : 'not_high' }}",
+              "type": "string"
+            }
+          ]
+        },
+        "includeOtherFields": true,
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.5,
+      "position": [
+        928,
+        -144
+      ],
+      "id": "6aff9802-8837-4880-8c93-fc2d4e78f2c8",
+      "name": "Edit Fields"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "91ebc51e-7f1b-4bbe-b0a6-948a7242a2b4",
+              "name": "sugar_level",
+              "value": "={{ $json.sugars_100g < 5 ? 'low' : ($json.sugars_100g <= 22.5 ? 'medium' : 'high') }}",
+              "type": "string"
+            },
+            {
+              "id": "8c65ef1c-d948-490b-9756-cf92fda58403",
+              "name": "salt_level",
+              "value": "={{ $json.salt_100g > 1.5 ? 'high' : 'not_high' }}",
+              "type": "string"
+            },
+            {
+              "id": "3a586513-3903-4f92-befb-9ac4c7577853",
+              "name": "fat_level",
+              "value": "={{ $json.fat_100g > 17.5 ? 'high' : 'not_high' }}",
+              "type": "string"
+            }
+          ]
+        },
+        "includeOtherFields": true,
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.5,
+      "position": [
+        928,
+        0
+      ],
+      "id": "1cd6254d-1ede-4864-bb6e-9c7ded80d8f2",
+      "name": "Edit Fields2"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "3f40d649-62bb-4f69-ab89-3567a384fd2e",
+              "name": "nutriscore_verdict",
+              "value": "={{   $json.nutriscore_grade === 'a' || $json.nutriscore_grade === 'b'     ? 'healthy'     : $json.nutriscore_grade === 'c'       ? 'moderate'       : 'unhealthy' }}",
+              "type": "string"
+            }
+          ]
+        },
+        "includeOtherFields": true,
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.5,
+      "position": [
+        1152,
+        -144
+      ],
+      "id": "8ecd50c3-de18-466a-8ce8-557d8a83cd8f",
+      "name": "Edit Fields3"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "9129ea7f-27c3-4a7d-a331-11c6473f6cec",
+              "name": "count",
+              "value": "={{   ($json.sugar_level === 'high' ? 1 : 0) +   ($json.salt_level === 'high' ? 1 : 0) +   ($json.fat_level === 'high' ? 1 : 0) }}",
+              "type": "number"
+            },
+            {
+              "id": "ac6bdcea-fd64-4f25-b4d9-43ecc94f9472",
+              "name": "calculate",
+              "value": "={{   (     ($json.sugar_level === 'high' ? 1 : 0) +     ($json.salt_level === 'high' ? 1 : 0) +     ($json.fat_level === 'high' ? 1 : 0)   ) === 0     ? 'healthy'     : (         ($json.sugar_level === 'high' ? 1 : 0) +         ($json.salt_level === 'high' ? 1 : 0) +         ($json.fat_level === 'high' ? 1 : 0)       ) === 1       ? 'moderate'       : 'unhealthy' }}",
+              "type": "string"
+            }
+          ]
+        },
+        "includeOtherFields": true,
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.5,
+      "position": [
+        1152,
+        0
+      ],
+      "id": "0c35934d-0b96-4f3d-990e-b3950e6dfccf",
+      "name": "Edit Fields4"
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 3
+          },
+          "conditions": [
+            {
+              "id": "7b3ccc56-e4c7-480d-a5cb-77842c243d02",
+              "leftValue": "={{ $json.body.barcode }}",
+              "rightValue": "",
+              "operator": {
+                "type": "string",
+                "operation": "notEmpty",
+                "singleValue": true
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.3,
+      "position": [
+        -496,
+        112
+      ],
+      "id": "1436b19d-2bfe-4238-b7ee-0c523b2618c0",
+      "name": "Barcode_Existe"
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 3
+          },
+          "conditions": [
+            {
+              "id": "e205519e-0dc8-47ff-879f-ebd583c76aea",
+              "leftValue": "={{ /^\\d+$/.test($json.body.barcode || '') }}",
+              "rightValue": "",
+              "operator": {
+                "type": "boolean",
+                "operation": "true",
+                "singleValue": true
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.3,
+      "position": [
+        -304,
+        48
+      ],
+      "id": "81adf12e-8ade-4372-8ec6-a786a1bb4b4a",
+      "name": "Barcode_Numeric"
+    },
+    {
+      "parameters": {
+        "url": "=https://world.openfoodfacts.org/api/v2/product/{{ $json.body.barcode }}?fields=product_name,brands,nutriscore_grade,nutriments",
+        "options": {
+          "response": {
+            "response": {
+              "fullResponse": true,
+              "neverError": true,
+              "responseFormat": "json"
+            }
+          }
+        }
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.5,
+      "position": [
+        -128,
+        -64
+      ],
+      "id": "5245a566-7467-4f5d-a27d-593e6b655dc4",
+      "name": "Open_API",
+      "alwaysOutputData": true
+    },
+    {
+      "parameters": {},
+      "type": "n8n-nodes-base.merge",
+      "typeVersion": 3.2,
+      "position": [
+        1408,
+        -64
+      ],
+      "id": "16d34588-1100-4acd-a1f0-6f8568f546c3",
+      "name": "Merge"
+    },
+    {
+      "parameters": {
+        "jsCode": "const items = $input.all();\n\nconst nutriscoreItem = items.find(i => i.json.nutriscore_verdict !== undefined);\nconst semaforoItem = items.find(i => i.json.calculate !== undefined);\n\nconst priority = { healthy: 1, moderate: 2, unhealthy: 3 };\n\nconst results = [];\nif (semaforoItem) results.push(semaforoItem.json.calculate);\nif (nutriscoreItem && nutriscoreItem.json.nutriscore_verdict !== 'unknown') {\n  results.push(nutriscoreItem.json.nutriscore_verdict);\n}\n\nconst final_verdict = results.reduce((worst, current) =>\n  priority[current] > priority[worst] ? current : worst\n);\n\nreturn [{\n  json: {\n    concern_score: semaforoItem ? semaforoItem.json.count : null,\n    semaforo_verdict: semaforoItem ? semaforoItem.json.calculate : null,\n    nutriscore_verdict: nutriscoreItem ? nutriscoreItem.json.nutriscore_verdict : null,\n    final_verdict: final_verdict,\n    product_name: (semaforoItem || nutriscoreItem)?.json.product_name,\n    brands: (semaforoItem || nutriscoreItem)?.json.brands,\n    sugars_100g: (semaforoItem || nutriscoreItem)?.json.sugars_100g,\n    salt_100g: (semaforoItem || nutriscoreItem)?.json.salt_100g,\n    fat_100g: (semaforoItem || nutriscoreItem)?.json.fat_100g,\n    nutriscore_grade: (semaforoItem || nutriscoreItem)?.json.nutriscore\n  }\n}];;"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        1632,
+        -64
+      ],
+      "id": "5f710d13-34c9-4c05-bb0e-2ba10314ffdb",
+      "name": "Code in Calculate Veredict"
+    },
+    {
+      "parameters": {
+        "rules": {
+          "values": [
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 3
+                },
+                "conditions": [
+                  {
+                    "leftValue": "={{ $json.final_verdict }}  ",
+                    "rightValue": "=healthy",
+                    "operator": {
+                      "type": "string",
+                      "operation": "equals"
+                    },
+                    "id": "df339f2e-2cf6-4a7e-8ddf-1261817c3d20"
+                  }
+                ],
+                "combinator": "and"
+              },
+              "renameOutput": true,
+              "outputKey": "saludable"
+            },
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 3
+                },
+                "conditions": [
+                  {
+                    "id": "bfefd60b-daab-4697-a5e8-d11a4ddadd56",
+                    "leftValue": "={{ $json.final_verdict }}",
+                    "rightValue": "moderate",
+                    "operator": {
+                      "type": "string",
+                      "operation": "equals",
+                      "name": "filter.operator.equals"
+                    }
+                  }
+                ],
+                "combinator": "and"
+              },
+              "renameOutput": true,
+              "outputKey": "moderado"
+            },
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 3
+                },
+                "conditions": [
+                  {
+                    "id": "c36daf8c-7d25-477a-8c90-b1e865c2332d",
+                    "leftValue": "={{ $json.final_verdict }}",
+                    "rightValue": "unhealthy",
+                    "operator": {
+                      "type": "string",
+                      "operation": "equals",
+                      "name": "filter.operator.equals"
+                    }
+                  }
+                ],
+                "combinator": "and"
+              },
+              "renameOutput": true,
+              "outputKey": "no_saludable"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.switch",
+      "typeVersion": 3.4,
+      "position": [
+        1856,
+        -64
+      ],
+      "id": "0079c51d-5d0e-482f-8451-22038b402cc2",
+      "name": "Switch"
+    },
+    {
+      "parameters": {
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatGroq",
+      "typeVersion": 1,
+      "position": [
+        2848,
+        -176
+      ],
+      "id": "7738fca3-350e-4537-baff-ebf75d7e406a",
+      "name": "Groq Chat Model",
+      "credentials": {
+        "groqApi": {
+          "id": "9dYUhThnKrnHsIc8",
+          "name": "Groq account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "=Actúa como un asistente de información nutricional.\n\nEl producto ha sido clasificado como SALUDABLE.\n\nEscribe un único párrafo corto con un tono alentador, positivo y objetivo.\n\nDebes:\n- Mencionar el nombre del producto y la marca.\n- Explicar brevemente el veredicto utilizando los valores nutricionales proporcionados.\n- Mencionar el Nutri-Score.\n- Basarte exclusivamente en los datos proporcionados. No inventes información.\n- Evitar afirmaciones médicas o beneficios para la salud que no puedan deducirse de los datos.\n- No superar las 3 frases.\n\nDatos del producto:\nNombre: {{ $json.product_name }}\nMarca: {{ $json.brands }}\nAzúcar: {{ $json.sugars_100g }} g/100g\nSal: {{ $json.salt_100g }} g/100g\nGrasa: {{ $json.fat_100g }} g/100g\nNutri-Score: {{ $json.nutriscore_grade }}\nVeredicto: saludable",
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 3.1,
+      "position": [
+        2096,
+        -448
+      ],
+      "id": "d7b2ca3c-4bf4-4466-8f9c-5f2b023caa26",
+      "name": "AI Positiva"
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "=Actúa como un asistente de información nutricional.\n\nEl producto ha sido clasificado como MODERADO.\n\nEscribe un único párrafo corto con un tono alentador pero equilibrado. Comunica que el producto puede presentar algunos aspectos nutricionales a tener en cuenta sin utilizar un tono alarmista.\n\nDebes:\n- Mencionar el nombre del producto y la marca.\n- Explicar brevemente el veredicto utilizando los valores nutricionales proporcionados.\n- Mencionar el Nutri-Score.\n- Basarte exclusivamente en los datos proporcionados. No inventes información.\n- Evitar afirmaciones médicas o beneficios para la salud que no puedan deducirse de los datos.\n- No superar las 3 frases.\n\nDatos del producto:\nNombre: {{ $json.product_name }}\nMarca: {{ $json.brands }}\nAzúcar: {{ $json.sugars_100g }} g/100g\nSal: {{ $json.salt_100g }} g/100g\nGrasa: {{ $json.fat_100g }} g/100g\nNutri-Score: {{ $json.nutriscore_grade }}\nVeredicto: moderado",
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 3.1,
+      "position": [
+        2112,
+        -144
+      ],
+      "id": "91cbf130-e9da-4dba-9332-3aa97ab09007",
+      "name": "AI Moderado"
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "=Actúa como un asistente de información nutricional.\n\nEl producto ha sido clasificado como NO SALUDABLE.\n\nEscribe un único párrafo corto con un tono cauteloso, claro y delicado. Explica los aspectos nutricionales que justifican el veredicto sin alarmar, juzgar al usuario ni exagerar sus consecuencias.\n\nDebes:\n- Mencionar el nombre del producto y la marca.\n- Explicar brevemente el veredicto utilizando los valores nutricionales proporcionados.\n- Mencionar el Nutri-Score.\n- Basarte exclusivamente en los datos proporcionados. No inventes información.\n- Evitar afirmaciones médicas o beneficios/perjuicios para la salud que no puedan deducirse de los datos.\n- No superar las 3 frases.\n\nDatos del producto:\nNombre: {{ $json.product_name }}\nMarca: {{ $json.brands }}\nAzúcar: {{ $json.sugars_100g }} g/100g\nSal: {{ $json.salt_100g }} g/100g\nGrasa: {{ $json.fat_100g }} g/100g\nNutri-Score: {{ $json.nutriscore_grade }}\nVeredicto: no saludable",
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 3.1,
+      "position": [
+        2096,
+        160
+      ],
+      "id": "891902ec-cb3b-4bdb-9139-804109130cb8",
+      "name": "AI Precaucion"
+    },
+    {
+      "parameters": {
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatGroq",
+      "typeVersion": 1,
+      "position": [
+        2096,
+        -272
+      ],
+      "id": "2f1f32cb-9036-4707-abd3-e9398d4accb5",
+      "name": "Groq Chat Model1",
+      "credentials": {
+        "groqApi": {
+          "id": "9dYUhThnKrnHsIc8",
+          "name": "Groq account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatGroq",
+      "typeVersion": 1,
+      "position": [
+        2112,
+        32
+      ],
+      "id": "a43841bc-dd8c-451a-b589-4da255074872",
+      "name": "Groq Chat Model2",
+      "credentials": {
+        "groqApi": {
+          "id": "9dYUhThnKrnHsIc8",
+          "name": "Groq account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatGroq",
+      "typeVersion": 1,
+      "position": [
+        2096,
+        352
+      ],
+      "id": "42a5c350-961c-4e7d-8561-bb5a3416cf66",
+      "name": "Groq Chat Model3",
+      "credentials": {
+        "groqApi": {
+          "id": "9dYUhThnKrnHsIc8",
+          "name": "Groq account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "respondWith": "text",
+        "responseBody": "=🟢 SALUDABLE\n\nProducto: {{ $('Code in Calculate Veredict').item.json.product_name }}\nMarca: {{ $('Code in Calculate Veredict').item.json.brands }}\n\n{{ $('Code in Calculate Veredict').item.json.sugars_100g > 22.5 ? '🔴' : '🟢' }} Azúcar: {{ $('Code in Calculate Veredict').item.json.sugars_100g }} g/100g\n{{ $('Code in Calculate Veredict').item.json.salt_100g > 1.5 ? '🔴' : '🟢' }} Sal: {{ $('Code in Calculate Veredict').item.json.salt_100g }} g/100g\n{{ $('Code in Calculate Veredict').item.json.fat_100g > 17.5 ? '🔴' : '🟢' }} Grasa: {{ $('Code in Calculate Veredict').item.json.fat_100g }} g/100g\nNutri-Score: {{ $('Code in Calculate Veredict').item.json.nutriscore_grade }}\n\n🤖 Análisis:\n{{ $json.output }}",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.respondToWebhook",
+      "typeVersion": 1.5,
+      "position": [
+        2464,
+        -448
+      ],
+      "id": "20ce4b74-5b6d-4a27-8e3d-f0dbc1107407",
+      "name": "Respond to Webhook4"
+    },
+    {
+      "parameters": {
+        "respondWith": "text",
+        "responseBody": "=🟡 MODERADO\n\nProducto: {{ $('Code in Calculate Veredict').item.json.product_name }}\nMarca: {{ $('Code in Calculate Veredict').item.json.brands }}\n\n{{ $('Code in Calculate Veredict').item.json.sugars_100g > 22.5 ? '🔴' : '🟢' }} Azúcar: {{ $('Code in Calculate Veredict').item.json.sugars_100g }} g/100g\n{{ $('Code in Calculate Veredict').item.json.salt_100g > 1.5 ? '🔴' : '🟢' }} Sal: {{ $('Code in Calculate Veredict').item.json.salt_100g }} g/100g\n{{ $('Code in Calculate Veredict').item.json.fat_100g > 17.5 ? '🔴' : '🟢' }} Grasa: {{ $('Code in Calculate Veredict').item.json.fat_100g }} g/100g\nNutri-Score: {{ $('Code in Calculate Veredict').item.json.nutriscore_grade }}\n\n🤖 Análisis:\n{{ $json.output }}",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.respondToWebhook",
+      "typeVersion": 1.5,
+      "position": [
+        2480,
+        -144
+      ],
+      "id": "1b9bc7ea-aeec-4e3e-a12a-c62d1d012789",
+      "name": "Respond to Webhook5"
+    },
+    {
+      "parameters": {
+        "respondWith": "text",
+        "responseBody": "=🔴 NO SALUDABLE\n\nProducto: {{ $('Code in Calculate Veredict').item.json.product_name }}\nMarca: {{ $('Code in Calculate Veredict').item.json.brands }}\n\n{{ $('Code in Calculate Veredict').item.json.sugars_100g > 22.5 ? '🔴' : '🟢' }} Azúcar: {{ $('Code in Calculate Veredict').item.json.sugars_100g }} g/100g\n{{ $('Code in Calculate Veredict').item.json.salt_100g > 1.5 ? '🔴' : '🟢' }} Sal: {{ $('Code in Calculate Veredict').item.json.salt_100g }} g/100g\n{{ $('Code in Calculate Veredict').item.json.fat_100g > 17.5 ? '🔴' : '🟢' }} Grasa: {{ $('Code in Calculate Veredict').item.json.fat_100g }} g/100g\nNutri-Score: {{ $('Code in Calculate Veredict').item.json.nutriscore_grade }}\n\n🤖 Análisis:\n{{ $json.output }}",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.respondToWebhook",
+      "typeVersion": 1.5,
+      "position": [
+        2464,
+        160
+      ],
+      "id": "a4218b77-45df-456a-b03f-968792e60cd9",
+      "name": "Respond to Webhook6"
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "Webhook": {
+      "main": [
+        [
+          {
+            "node": "Barcode_Existe",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Edit Fields1": {
+      "main": [
+        [
+          {
+            "node": "Nutrition_Data",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Respond to Webhook3": {
+      "main": [
+        []
+      ]
+    },
+    "Nutrition_Data": {
+      "main": [
+        [
+          {
+            "node": "If2",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Respond to Webhook2",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Existencia_Product": {
+      "main": [
+        [
+          {
+            "node": "Edit Fields1",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Respond to Webhook3",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "If2": {
+      "main": [
+        [
+          {
+            "node": "Edit Fields",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Edit Fields2",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Edit Fields": {
+      "main": [
+        [
+          {
+            "node": "Edit Fields3",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Edit Fields2": {
+      "main": [
+        [
+          {
+            "node": "Edit Fields4",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Barcode_Existe": {
+      "main": [
+        [
+          {
+            "node": "Barcode_Numeric",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Respond to Webhook1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Barcode_Numeric": {
+      "main": [
+        [
+          {
+            "node": "Open_API",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Respond to Webhook",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Open_API": {
+      "main": [
+        [
+          {
+            "node": "Existencia_Product",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Edit Fields4": {
+      "main": [
+        [
+          {
+            "node": "Merge",
+            "type": "main",
+            "index": 1
+          }
+        ]
+      ]
+    },
+    "Edit Fields3": {
+      "main": [
+        [
+          {
+            "node": "Merge",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Merge": {
+      "main": [
+        [
+          {
+            "node": "Code in Calculate Veredict",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Code in Calculate Veredict": {
+      "main": [
+        [
+          {
+            "node": "Switch",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Groq Chat Model": {
+      "ai_languageModel": [
+        []
+      ]
+    },
+    "Switch": {
+      "main": [
+        [
+          {
+            "node": "AI Positiva",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "AI Moderado",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "AI Precaucion",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Groq Chat Model1": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "AI Positiva",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Groq Chat Model2": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "AI Moderado",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Groq Chat Model3": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "AI Precaucion",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "AI Positiva": {
+      "main": [
+        [
+          {
+            "node": "Respond to Webhook4",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "AI Moderado": {
+      "main": [
+        [
+          {
+            "node": "Respond to Webhook5",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "AI Precaucion": {
+      "main": [
+        [
+          {
+            "node": "Respond to Webhook6",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1",
+    "binaryMode": "separate"
+  },
+  "versionId": "624ea918-3634-4a21-922a-f5a33b42b910",
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "7f8aacd6efef45bd3c58054ad0deab4207b0bfc2f017503e0f333cd827df557d"
+  },
+  "nodeGroups": [],
+  "id": "egVs7QIjvLlYWAp8",
+  "tags": []
+}
